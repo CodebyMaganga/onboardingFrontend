@@ -10,7 +10,7 @@ const Card = ({ title, icon, data, description, dataChange }) => {
   <div className="flex flex-col w-full gap-1">
     <p className="text-lg font-bold">{data}</p>
     <p className="text-neutral-400 text-sm">{description}</p>
-    <p className="text-sm text-green-400">{dataChange}</p>
+    <p className="text-sm text-green-500">{dataChange}</p>
   </div>
 </div>
  

@@ -67,7 +67,7 @@ export default function AuthForm() {
             <input
               type="text"
               placeholder="Username"
-              value={email}
+              value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded"
             />

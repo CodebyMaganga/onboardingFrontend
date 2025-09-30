@@ -3,8 +3,16 @@ import PrivateRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/HomePage";
 import Login from "./pages/AuthPage";
+import { useFormStore } from "./store/context";
 
 function App() {
+  const { state } = useFormStore();
+
+  
+
+  if (!state.isAuthenticated) {
+    return <Login />;
+  }
   return (
     <Router>
       <Routes>

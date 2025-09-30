@@ -1,7 +1,18 @@
 import { SiNextbilliondotai } from "react-icons/si";
 import { IoShieldOutline } from "react-icons/io5";
+import { useFormStore } from "../store/context";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+
+  const { dispatch } = useFormStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
+   
+  };
   return (
     <div className="flex justify-between items-center p-4 border-b-2 bg-white  border-gray-200 shadow-lg">
       <div className="flex items-center gap-2">
@@ -18,8 +29,11 @@ const Navbar = () => {
       <div className="flex items-center gap-2">
         <IoShieldOutline />
         <p>Secure and Compliant</p>
-        
+        <div onClick={handleLogout} className="flex items-center gap-2 cursor-pointer">
+          <p className="bg-red-600 text-white px-4 rounded-lg py-2 mx-2">Logout</p>
     </div>
+    </div>
+    
     </div>
   );
 }

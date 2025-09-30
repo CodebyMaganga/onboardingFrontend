@@ -4,12 +4,15 @@ import { ImProfile } from "react-icons/im";
 import { GoGraph } from "react-icons/go";
 import { CiTimer } from "react-icons/ci";
 import Card from "./Card";
+import { useFormStore } from "../store/context";
 
 const AdminDashBoard = () => {
     const formIcon = <FaWpforms />;
     const profileIcon = <ImProfile />;
     const graphIcon = <GoGraph />;
     const timerIcon = <CiTimer />;
+
+    const { state, dispatch } = useFormStore();
       
   return (
     <div className="mt-8">
@@ -31,8 +34,8 @@ const AdminDashBoard = () => {
 
      </div> 
      <div className="mt-6 flex flex-row justify-around ">
-        <Card title={"Total Forms"} icon={formIcon} data={10} description={"Active onboarding forms"} dataChange={"+2 this month"} />
-        <Card title={"Submissions"} icon={profileIcon} data={1237} description={"All-time submissions"} dataChange={"+89 this week"} />
+        <Card title={"Total Forms"} icon={formIcon} data={state.forms.length} description={"Active onboarding forms"} dataChange={"+2 this month"} />
+        <Card title={"Submissions"} icon={profileIcon} data={state.submissions.length} description={"All-time submissions"} dataChange={"+89 this week"} />
         <Card title={"Completion Rate"} icon={graphIcon} data={'87%'} description={"Average form completion"} dataChange={"+5% vs last month"} />
         <Card title={"Avg. Process Time"} icon={timerIcon} data={'12min'} description={"Time to complete forms"} dataChange={"-3min vs last month"} />
      </div>
