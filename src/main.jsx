@@ -5,17 +5,19 @@ import App from './App.jsx'
 import "@radix-ui/themes/styles.css";
 import { FormProvider } from "./store/context";
 
+
 import { Theme } from "@radix-ui/themes";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+
     <Theme >
       <FormProvider>
       <App />
-      </FormProvider>
-   
+      </FormProvider> 
     </Theme>
-  
+
+   
 
   </StrictMode>,
 )

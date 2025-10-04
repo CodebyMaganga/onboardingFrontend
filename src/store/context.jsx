@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer } from "react";
 
+
 const FormContext = createContext();
 
 const initialState = {
@@ -8,7 +9,10 @@ const initialState = {
   isAuthenticated: !!localStorage.getItem("access_token"),
   forms: [],
   submissions: [],
+  user: {},
 };
+
+
 
 function reducer(state, action) {
   switch (action.type) {
@@ -30,6 +34,7 @@ function reducer(state, action) {
         accessToken: null,
         refreshToken: null,
         isAuthenticated: false,
+        user: null,
       };
 
     case "SET_FORMS":
@@ -43,6 +48,13 @@ function reducer(state, action) {
         ...state,
         submissions: action.payload,
       };
+    case "SET_USER":
+      return {
+        ...state,
+        user: action.payload,
+      };
+    
+    
 
     default:
       return state;

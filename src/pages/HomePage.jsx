@@ -21,6 +21,7 @@ export default function HomePage() {
   const [totalForms, setTotalForms] = useState(0);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
   const [pendingSubmissions, setPendingSubmissions] = useState(0);
+  const [submissions, setSubmissions] = useState([]);
 
   const { state, dispatch } = useFormStore();
 
@@ -69,7 +70,7 @@ export default function HomePage() {
   }, [state.forms]); 
   
 
-  
+
   return (
     <>
     <div className="bg-slate-50 h-auto">

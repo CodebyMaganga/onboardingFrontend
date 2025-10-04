@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import { useFormStore } from "../store/context";
 import api from "../api";
+import {toast, ToastContainer} from 'react-toastify';
 
 
 export default function FormBuilder() {
@@ -38,6 +39,32 @@ export default function FormBuilder() {
   
 
   const { state, dispatch } = useFormStore();
+
+  const notify = (message="Form Saved Successfully") => toast(message,{
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    type: "success",
+
+  });
+
+  const notifyError = (message="Form Saved Failed") => toast(message,{
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    type: "error",
+
+  });
 
   const fieldTypes = [
     { value: "text", label: "Text Input", icon: "📝" },
@@ -84,7 +111,7 @@ export default function FormBuilder() {
 
   const removeSection = (sectionId) => {
     if (formConfig.schema.length <= 1) {
-      alert("You must have at least one section");
+      notifyError("You must have at least one section");
       return;
     }
     setFormConfig((prev) => ({
@@ -168,10 +195,7 @@ export default function FormBuilder() {
     });
   };
 
-  const saveForm = () => {
-    console.log("Saving form:", formConfig);
-    alert("Form saved successfully!");
-  };
+
 
   // Get current category label
   const getCurrentCategoryLabel = () => {
@@ -260,6 +284,23 @@ export default function FormBuilder() {
     }
   };
 
+  const saveForm = (e) => {
+    e?.preventDefault(); 
+     
+    api.post("forms/", formConfig)
+      .then((res) => {
+       
+        dispatch({ type: "SET_FORMS", payload: res.data });
+        setFormConfig(res.data);
+        setPreviewMode(false);
+        notify("Form saved successfully");
+      })
+      .catch((err) => {
+        console.log(err);
+        notifyError("Error saving form");
+      });
+  };
+
   const handleSaveAsDraft = () => {
     const draftFormConfig = {
       ...formConfig,
@@ -267,31 +308,33 @@ export default function FormBuilder() {
     }
     api.post("forms/", draftFormConfig)
     .then((res) => {
-      console.log("Draft saved:", res);
+   
       dispatch({ type: "SET_FORMS", payload: draftFormConfig });
       setFormConfig(res.data);
       setPreviewMode(false);
-      alert("Form saved as draft successfully!");
+      notify("Form saved as draft successfully");
      
     })
     .catch((err) => {
-      console.log("Error saving draft:", err);
-      alert("Failed to save draft");
+      
+      notifyError("Failed to save draft");
     });
    
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.post("http://127.0.0.1:8000/api/forms/", formConfig)
+    api.post("forms/", formConfig)
       .then((res) => {
-        console.log(res);
+    
         dispatch({ type: "SET_FORMS", payload: res.data });
         setFormConfig(res.data);
         setPreviewMode(false);
+        notify("Form saved successfully");
       })
       .catch((err) => {
         console.log(err);
+        notifyError("Error saving form");
       });
       
   };
@@ -299,6 +342,7 @@ export default function FormBuilder() {
   if (previewMode) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
+        <ToastContainer />
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
@@ -315,7 +359,7 @@ export default function FormBuilder() {
                 </div>
               </div>
               <button
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer"
                 onClick={() => setPreviewMode(false)}
               >
                 Back to Editor
@@ -387,14 +431,14 @@ export default function FormBuilder() {
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={handleSaveAsDraft}
                 >
                   Save as Draft
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  className="px-6 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors cursor-pointer"
                 >
                   Submit Form
                 </button>
@@ -408,7 +452,7 @@ export default function FormBuilder() {
 
   return (
     <div className="space-y-6 mt-8">
-      {/* Header */}
+      <ToastContainer />
       <div className="flex justify-between items-center mx-10">
         <div>
           <h2 className="font-semibold text-lg">Form Builder</h2>
@@ -417,13 +461,13 @@ export default function FormBuilder() {
         <div className="space-x-2 flex flex-row">
           <button
             onClick={() => setPreviewMode(true)}
-            className="px-3 py-1 border rounded flex items-center gap-1"
+            className="px-3 py-1 border rounded flex items-center gap-1 cursor-pointer"
           >
             <FaEye size={14} /> Preview
           </button>
           <button
             onClick={saveForm}
-            className="px-3 py-1 bg-blue-500 text-white rounded flex items-center gap-1"
+            className="px-3 py-1 bg-blue-500 text-white rounded flex items-center gap-1 cursor-pointer"
           >
             <FaSave size={14} /> Save
           </button>

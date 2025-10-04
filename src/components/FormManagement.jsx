@@ -20,6 +20,7 @@ import {
 import { useFormStore } from "../store/context";
 import api from '../api';
 import EditForm from './EditForm';
+import {toast, ToastContainer} from 'react-toastify';
 
 
 
@@ -83,18 +84,16 @@ export default function FormManagement() {
         // Filter from state.forms, not filteredForms
         const updatedForms = state.forms.filter(form => form.id !== formId);
         dispatch({ type: "SET_FORMS", payload: updatedForms });
-        console.log("Form deleted:", res);
-        alert("Form deleted successfully!");
+        
+        notify("Form deleted successfully");
       })
       .catch((err) => {
         console.error("Error deleting form:", err);
-        alert("Failed to delete form. Please try again.");
+        notifyError("Failed to delete form. Please try again.");
       });
   };
 
-  useEffect(() => {
-    console.log(state.forms);
-  }, [state.forms]);
+
 
   
   // Custom Select Component
@@ -144,6 +143,7 @@ export default function FormManagement() {
   return (
 
     <div className="space-y-6 p-6 mx-4">
+      <ToastContainer />
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Form Management</h3>
