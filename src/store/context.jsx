@@ -54,6 +54,12 @@ function reducer(state, action) {
         user: action.payload,
       };
     
+    case "SET_NOTIFICATIONS":
+      return {
+        ...state,
+        notifications: action.payload,
+      };
+    
     
 
     default:

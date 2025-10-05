@@ -22,6 +22,8 @@ export default function HomePage() {
   const [totalSubmissions, setTotalSubmissions] = useState(0);
   const [pendingSubmissions, setPendingSubmissions] = useState(0);
   const [submissions, setSubmissions] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [totalNotifications, setTotalNotifications] = useState(0);
 
   const { state, dispatch } = useFormStore();
 
@@ -54,9 +56,20 @@ export default function HomePage() {
         console.error(error);
       }
     };
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await api.get("system-logs/");
+        setTotalNotifications(response.data.length);
+        dispatch({ type: "SET_NOTIFICATIONS", payload: response.data });
+      } catch (error) {
+        console.error(error);
+      }
+    };
   
     fetchForms();
     fetchSubmissions();
+    fetchNotifications();
   }, [dispatch]); 
 
   useEffect(() => {

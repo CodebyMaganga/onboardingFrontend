@@ -16,6 +16,7 @@ import {
   FiFilter, 
   FiMoreHorizontal 
 } from 'react-icons/fi';
+import { useFormStore } from "../store/context";
 
 export default function NotificationDashBoard() {
   const [filter, setFilter] = useState('all');
@@ -27,80 +28,16 @@ export default function NotificationDashBoard() {
     weeklyDigest: true,
     instantAlerts: true
   });
+  const { state } = useFormStore();
 
   // Mock notifications data
-  const notifications = [
-    {
-      id: '1',
-      type: 'submission',
-      title: 'New Form Submission',
-      message: 'KYC Form completed and ready for review',
-      formName: 'KYC Form',
-      clientName: 'John Doe',
-      timestamp: '2 minutes ago',
-      read: false,
-      priority: 'high'
-    },
-    {
-      id: '2',
-      type: 'review_required',
-      title: 'Document Review Required',
-      message: 'Uploaded documents need manual verification',
-      formName: 'Personal Loan Application',
-      clientName: 'Sarah Chen',
-      timestamp: '15 minutes ago',
-      read: false,
-      priority: 'high'
-    },
-    {
-      id: '3',
-      type: 'approval',
-      title: 'Application Approved',
-      message: 'Investment risk assessment has been approved',
-      formName: 'Investment Risk Assessment',
-      clientName: 'Mike Wilson',
-      timestamp: '1 hour ago',
-      read: true,
-      priority: 'medium'
-    },
-    {
-      id: '4',
-      type: 'warning',
-      title: 'Incomplete Submission',
-      message: 'Form abandoned at document upload stage',
-      formName: 'Business Account Opening',
-      clientName: 'TechCorp LLC',
-      timestamp: '2 hours ago',
-      read: false,
-      priority: 'medium'
-    },
-    {
-      id: '5',
-      type: 'system',
-      title: 'System Maintenance',
-      message: 'Scheduled maintenance completed successfully',
-      timestamp: '3 hours ago',
-      read: true,
-      priority: 'low'
-    },
-    {
-      id: '6',
-      type: 'submission',
-      title: 'Bulk Submissions Received',
-      message: '5 new KYC forms submitted in the last hour',
-      formName: 'KYC Form',
-      timestamp: '4 hours ago',
-      read: true,
-      priority: 'medium'
-    }
-  ];
+ const notifications = state?.notifications || [];
 
   const filteredNotifications = notifications.filter(notification => {
-    const matchesFilter = filter === 'all' || notification.type === filter;
-    const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         notification.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         notification.formName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filter === 'all' || notification.action === filter;
+    const matchesSearch = notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         notification.message.toLowerCase().includes(searchTerm.toLowerCase())
+
     return matchesFilter && matchesSearch;
   });
 
@@ -255,13 +192,14 @@ export default function NotificationDashBoard() {
                   value={filter}
                   onValueChange={setFilter}
                   placeholder="Filter by type"
-                  items={[
-                    { value: 'all', label: 'All Types' },
-                    { value: 'submission', label: 'Submissions' },
-                    { value: 'review_required', label: 'Review Required' },
-                    { value: 'approval', label: 'Approvals' },
-                    { value: 'warning', label: 'Warnings' },
-                    { value: 'system', label: 'System' }
+                  items={
+                    [
+                    { value: 'all', label: 'All' },
+                    { value: 'CLIENTSUBMISSION', label: 'Client Submissions' },
+                    { value: 'CREATE', label: 'Form Created' },
+                    { value: 'NOTIFY', label: 'Notification' },
+                    { value: 'SYSTEM', label: 'System' }
+                    
                   ]}
                 />
               </div>
@@ -306,7 +244,7 @@ export default function NotificationDashBoard() {
                               {notification.message}
                             </p>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          {/* <div className="flex items-center space-x-2">
                             {getPriorityBadge(notification.priority)}
                             <DropdownMenu.Root>
                               <DropdownMenu.Trigger asChild>
@@ -336,7 +274,7 @@ export default function NotificationDashBoard() {
                                 </DropdownMenu.Content>
                               </DropdownMenu.Portal>
                             </DropdownMenu.Root>
-                          </div>
+                          </div> */}
                         </div>
                         
                         <div className="flex items-center justify-between text-sm">
