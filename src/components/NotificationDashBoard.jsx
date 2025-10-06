@@ -41,6 +41,8 @@ export default function NotificationDashBoard() {
     return matchesFilter && matchesSearch;
   });
 
+  console.log('fi;ltere',filteredNotifications)
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const getNotificationIcon = (type) => {
@@ -118,7 +120,7 @@ export default function NotificationDashBoard() {
     </Select.Root>
   );
 
-  // Switch Component
+
   const Switch = ({ checked, onCheckedChange }) => (
     <button
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
@@ -133,6 +135,16 @@ export default function NotificationDashBoard() {
       />
     </button>
   );
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -288,7 +300,7 @@ export default function NotificationDashBoard() {
                           </div>
                           <div className="flex items-center space-x-1 text-slate-500">
                             <FiClock className="h-3 w-3" />
-                            <span>{notification.timestamp}</span>
+                            <span>{formatDate(notification.created_at)}</span>
                           </div>
                         </div>
                       </div>

@@ -33,14 +33,36 @@ export default function FormManagement() {
 
   const { state, dispatch } = useFormStore();
 
+  const notify = (message="Form Saved Successfully") => toast(message,{
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    type: "success",  
+  });
 
+  const notifyError = (message="Form Saved Failed") => toast(message,{
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    type: "error",  
+  });
 
-  const filteredForms = state.forms.filter(form => {
+  const filteredForms = Array.isArray(state.forms) ? state.forms.filter(form => {
     const matchesSearch = form.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === 'all' || form.category === filterCategory;
     const matchesStatus = filterStatus === 'all' || form.status === filterStatus;
     return matchesSearch && matchesCategory && matchesStatus;
-  });
+  }) : [];
 
   const getCategoryLabel = (category) => {
     const labels = {
@@ -322,8 +344,10 @@ export default function FormManagement() {
           <div>
             <p className="text-sm text-slate-600">Active Forms</p>
             <p className="text-2xl font-bold text-slate-900">
-              {state.forms.filter(f => f.is_active === true).length}
-            </p>
+  {Array.isArray(state.forms)
+    ? state.forms.filter(f => f.is_active === true).length
+    : 0}
+</p>
           </div>
           <div className="bg-green-100 p-3 rounded-lg">
             <FiCheckCircle className="h-6 w-6 text-green-600" />
@@ -336,7 +360,9 @@ export default function FormManagement() {
           <div>
             <p className="text-sm text-slate-600">Total Submissions</p>
             <p className="text-2xl font-bold text-slate-900">
-              {state.submissions.reduce((sum, f) => sum + f.submissions, 0).toLocaleString()}
+              { Array.isArray(state.submissions)
+                ? state.submissions.length
+                : 0}
             </p>
           </div>
           <div className="bg-blue-100 p-3 rounded-lg">
@@ -350,7 +376,7 @@ export default function FormManagement() {
           <div>
             <p className="text-sm text-slate-600">Avg. Completion Rate</p>
             <p className="text-2xl font-bold text-slate-900">
-              {Math.round(state.forms.reduce((sum, f) => sum + f.completionRate, 0) / state.forms.length)}%
+             -
             </p>
           </div>
           <div className="bg-yellow-100 p-3 rounded-lg">

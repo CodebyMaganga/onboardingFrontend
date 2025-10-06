@@ -12,6 +12,8 @@ import axios from "axios";
 import api from "../api";
 import { useFormStore } from "../store/context";
 import { IoMdTrendingUp } from "react-icons/io";
+import useWebSocket from "../useWebSocket";
+import {toast, ToastContainer} from 'react-toastify';
 
 export default function HomePage() {
   const [dashBoardState, setDashBoardState] = useState('AdminDashBoard');
@@ -26,6 +28,8 @@ export default function HomePage() {
   const [totalNotifications, setTotalNotifications] = useState(0);
 
   const { state, dispatch } = useFormStore();
+
+  const { messages } = useWebSocket(`ws://localhost:8000/ws/notifications/${state.user.id}/`);
 
   const handleDashBoardState = (state) => {
     setDashBoardState(state);
@@ -66,29 +70,56 @@ export default function HomePage() {
         console.error(error);
       }
     };
+
+  
   
     fetchForms();
     fetchSubmissions();
     fetchNotifications();
   }, [dispatch]); 
 
-  useEffect(() => {
-    const activeForms = state.forms.filter((form) => form.is_active === true);
-    setActiveForms(activeForms.length);
+useEffect(() => {
+  const activeForms = Array.isArray(state.forms) ? state.forms.filter((form) => form.is_active === true) : [];
+  setActiveForms(activeForms.length);
 
-    const pendingSubmissions = state.submissions.filter((submission) => submission.is_active === false);
-    setPendingSubmissions(pendingSubmissions.length);
+  const pendingSubmissions = Array.isArray(state.submissions) ? state.submissions.filter((submission) => submission.is_active === false) : [];
+  setPendingSubmissions(pendingSubmissions.length);
+}, [state.forms, state.submissions]);
   
+useEffect(() => {
+  if (messages.length > 0) {
+    const latest = messages[messages.length - 1];
+
+ 
+    setNotifications((prev) => [latest, ...prev]);
+    setTotalNotifications((prev) => prev + 1);
+
     
-  }, [state.forms]); 
-  
+    dispatch({ type: "SET_NOTIFICATIONS", payload: messages });
+
+    toast(latest.message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      type: "success",
+
+    });
+
+   
+  }
+}, [messages, dispatch]);
 
 
   return (
     <>
     <div className="bg-slate-50 h-auto">
     <Navbar />
-
+    <ToastContainer />
     
     <div className="mt-8 flex flex-row justify-around ">
       <div className="text-sm flex flex-row gap-2 items-center border bg-white  px-4 w-[25%] rounded-2xl justify-around border-gray-50 shadow-lg">

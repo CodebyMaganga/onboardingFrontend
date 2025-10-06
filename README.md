@@ -1,16 +1,45 @@
-# React + Vite
+# 🧭 Frontend - Financial Onboarding System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **React.js frontend** for the Financial Onboarding System.  
+It provides dashboards, real-time notifications (via WebSockets), and tools for managing onboarding forms, submissions, and user workflows.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+- Admin dashboard for managing forms and submissions
+- Real-time notifications using WebSockets
+- Toast-based alerts for system logs
+- Integrated global state management (using `useFormStore`)
+- Responsive design with TailwindCSS
+- API integration with Django backend (using Axios)
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧰 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Category | Technology |
+|-----------|-------------|
+| Framework | React 18 |
+| Styling | Tailwind CSS |
+| State Management | Context API  |
+| Networking | Axios |
+| WebSockets | Django Channels / WebSocket API |
+| Icons | React Icons |
+| Toast Notifications | React Hot Toast  |
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/CodebyMaganga/onboardingFrontend.git
+cd onboardingFrontend
+
+
+##CREDENTIALS
+username: AdminTest
+password: Passcode123
+```
+

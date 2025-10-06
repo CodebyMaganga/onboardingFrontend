@@ -5,13 +5,16 @@ import { FaChevronDown, FaCheck, FaLayerGroup, FaSave, FaPlus, FaTrash, FaEdit }
 import api from "../api";
 import {toast, ToastContainer} from 'react-toastify';
 
+
 const EditForm = ({ formId, onCancel }) => {
-  const { state } = useFormStore();
+  const { state, dispatch } = useFormStore();
   const [form, setForm] = useState(null);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [builderMode, setBuilderMode] = useState(false);
+
+  
 
   useEffect(() => {
     const foundForm = state.forms.find((f) => f.id === formId);
@@ -93,9 +96,19 @@ const EditForm = ({ formId, onCancel }) => {
 
   const handleSaveForm = () => {
     api
-      .put(`forms/${form.id}/`, form)
+      .put(`forms/${form.id}/`, {
+  name: form.name,
+  description: form.description,
+  schema: form.schema,
+  category: form.category,
+  created_by: form.created_by,
+  is_active: form.is_active,
+
+})
       .then((res) => {
+       
         notify("Form updated successfully");
+       onCancel();
       })
       .catch((err) => {
         console.error(err);
@@ -118,43 +131,39 @@ const EditForm = ({ formId, onCancel }) => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    let isValid = true;
 
-    form.schema?.forEach((section) => {
-      section.fields?.forEach((field) => {
-        if (field.required && !formData[field.id]) {
-          newErrors[field.id] = "This field is required";
-          isValid = false;
-        }
-      });
-    });
-
-    setErrors(newErrors);
-    return isValid;
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      notifyError("Please fill in all required fields");
-      return;
-    }
+    const getAllVersions = async (formId) => {
+  try {
+    const response = await api.get(`forms/${formId}/versions/`);
+    console.log('All versions:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching versions:', error);
+  }
+};
 
-    const submissionData = {
-      formId: form.id,
-      formName: form.name,
-      category: form.category,
-      responses: formData,
-      submittedAt: new Date().toISOString(),
-    };
+getAllVersions(form.id).then((versions) => {
+  console.log('Versions:', versions);
+});
+
+    
 
     api
-      .post("http://127.0.0.1:8000/api/form-submissions/", submissionData)
+      .put(`forms/${form.id}/`, {
+         name: form.name,
+  description: form.description,
+  schema: form.schema,
+  category: form.category,
+  created_by: form.created_by,
+  is_active: form.is_active,
+      })
       .then(() => {
         notify("Form submitted successfully!");
+          onCancel();
       })
       .catch(() => {
         notifyError("Failed to submit form. Please try again.");
@@ -356,13 +365,13 @@ const EditForm = ({ formId, onCancel }) => {
             ))}
             <button
               onClick={addSection}
-              className="px-4 py-2 bg-green-500 text-white rounded-md flex items-center gap-2"
+              className="px-4 py-2 bg-green-500 text-white rounded-md flex items-center gap-2 cursor-pointer"
             >
               <FaPlus /> Add Section
             </button>
             <button
               onClick={handleSaveForm}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center gap-2 cursor-pointer"
             >
               <FaSave /> Save Form
             </button>

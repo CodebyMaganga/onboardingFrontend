@@ -59,6 +59,21 @@ function reducer(state, action) {
         ...state,
         notifications: action.payload,
       };
+    case 'ADD_FORM':
+      return {
+        ...state,
+        forms: [...state.forms, action.payload]
+      }
+    case 'UPDATE_FORM':
+      return {
+        ...state,
+        forms: state.forms.map(form => form.id === action.payload.id ? action.payload : form)
+      }
+    case 'DELETE_FORM':
+        return {
+          ...state,
+        forms: state.forms.filter(form => form.id !== action.payload)
+      }
     
     
 

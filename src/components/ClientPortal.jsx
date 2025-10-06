@@ -56,17 +56,17 @@ export default function ClientPortal() {
   }, [dispatch]); 
 
   useEffect(() => {
-    const activeForms = state.forms.filter((form) => form.is_active === true);
+    const activeForms = Array.isArray(state.forms) ? state?.forms.filter((form) => form.is_active === true) : [];  
     setActiveForms(activeForms.length);
 
-    const pendingSubmissions = state.submissions.filter((submission) => submission.status === 'pending');
+    const pendingSubmissions = Array.isArray(state.submissions) ? state?.submissions.filter((submission) => submission.status === 'pending') : [];
     setPendingSubmissions(pendingSubmissions.length);
   }, [state.forms, state.submissions]); 
 
   // Filter user's submissions
-  const mySubmissions = state.submissions.filter((submission) => 
+  const mySubmissions = Array.isArray(state.submissions) ? state?.submissions?.filter((submission) => 
     submission.created_by === state.user?.id
-  );
+  ) : []
 
   // Group submissions by status
   const approvedSubmissions = mySubmissions.filter(s => s.status === 'approved');
@@ -137,90 +137,179 @@ export default function ClientPortal() {
     const form = state.forms.find(f => f.id === selectedSubmission.form);
     
     return (
-      <div className="fixed inset-0 bg-slate-200/90 bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          {/* Modal Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
-            <div className="flex items-center justify-between">
+     <div className="fixed inset-0 bg-slate-200/90 bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden">
+    {/* Modal Header */}
+    <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 text-white">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Submission Details</h2>
+          <p className="text-blue-100 mt-1">
+            {form?.name} • Submitted on {formatDate(selectedSubmission.created_at)}
+          </p>
+        </div>
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="text-white hover:text-blue-200 transition-colors duration-200 p-2"
+        >
+          <FaTimes size={24} />
+        </button>
+      </div>
+    </div>
+
+    {/* Status Badge */}
+    <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedSubmission.status)}`}>
+            {getStatusIcon(selectedSubmission.status)}
+            <span className="ml-2 capitalize">{selectedSubmission.status}</span>
+          </span>
+          <span className="text-sm text-gray-600">
+            Version {selectedSubmission.form_version}
+          </span>
+        </div>
+        <div className="text-sm text-gray-600">
+          Submission ID: #{selectedSubmission.id}
+        </div>
+      </div>
+    </div>
+
+    {/* Submission Content - Form-like Layout */}
+    <div className="p-6 overflow-y-auto max-h-[60vh]">
+      {/* Group submission data by sections if available, otherwise create default section */}
+      {(selectedSubmission.form?.schema || []).length > 0 ? (
+        <div className="space-y-8">
+          {selectedSubmission.form.schema.map((section, sectionIndex) => {
+            // Get fields that belong to this section
+            const sectionFields = selectedSubmission.submission_data?.filter(fieldData => {
+              const fieldId = fieldData.field.split('.').pop(); // Extract field ID from field path
+              return section.fields?.some(field => field.id === fieldId);
+            }) || [];
+
+            if (sectionFields.length === 0) return null;
+
+            return (
+              <div key={section.id} className="bg-white rounded-lg shadow-sm border overflow-hidden">
+                {/* Section Header */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      {sectionIndex + 1}
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900">{section.name}</h2>
+                      {section.description && (
+                        <p className="text-sm text-gray-600 mt-1">{section.description}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section Fields in 3-column grid */}
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sectionFields.map((fieldData, fieldIndex) => {
+                      const fieldLabel = getFieldName(fieldData.field, selectedSubmission.form);
+                      const fieldConfig = section.fields?.find(field => {
+                        const fieldId = fieldData.field.split('.').pop();
+                        return field.id === fieldId;
+                      });
+
+                      // Determine if field should be full-width
+                      const fullWidthFields = ['textarea', 'file'];
+                      const isFullWidth = fieldConfig && fullWidthFields.includes(fieldConfig.type);
+                      
+                      return (
+                        <div 
+                          key={fieldIndex} 
+                          className={`space-y-2 ${isFullWidth ? 'md:col-span-2 lg:col-span-3' : ''}`}
+                        >
+                          <label className="block text-sm font-medium text-gray-700">
+                            {fieldLabel}
+                          </label>
+                          <div className="bg-gray-50 rounded-lg p-4 min-h-[44px] border border-gray-200">
+                            <div className="text-gray-700 whitespace-pre-wrap break-words">
+                              {fieldData.value || (
+                                <em className="text-gray-400">No value provided</em>
+                              )}
+                            </div>
+                          </div>
+                          {fieldConfig?.type === 'file' && fieldData.value && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              📎 File attached
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Fallback: Single section layout when no schema is available */
+        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                1
+              </div>
               <div>
-                <h2 className="text-2xl font-bold">Submission Details</h2>
-                <p className="text-blue-100 mt-1">
-                  {form?.name} • Submitted on {formatDate(selectedSubmission.created_at)}
-                </p>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-white hover:text-blue-200 transition-colors duration-200 p-2"
-              >
-                <FaTimes size={24} />
-              </button>
-            </div>
-          </div>
-  
-          {/* Status Badge */}
-          <div className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedSubmission.status)}`}>
-                  {getStatusIcon(selectedSubmission.status)}
-                  <span className="ml-2 capitalize">{selectedSubmission.status}</span>
-                </span>
-                <span className="text-sm text-gray-600">
-                  Version {selectedSubmission.form_version}
-                </span>
-              </div>
-              <div className="text-sm text-gray-600">
-                Submission ID: #{selectedSubmission.id}
+                <h2 className="text-lg font-semibold text-gray-900">Submission Data</h2>
+                <p className="text-sm text-gray-600 mt-1">All submitted form fields</p>
               </div>
             </div>
           </div>
-  
-          {/* Submission Content */}
-          <div className="p-6 overflow-y-auto max-h-[60vh]">
-            <div className="space-y-6">
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {selectedSubmission.submission_data?.map((fieldData, index) => {
                 const fieldLabel = getFieldName(fieldData.field, selectedSubmission.form);
                 
                 return (
-                  <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {fieldLabel}
-                      </h3>
-                     
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-gray-700 whitespace-pre-wrap">
-                        {fieldData.value || <em className="text-gray-400">No value provided</em>}
-                      </p>
+                  <div key={index} className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {fieldLabel}
+                    </label>
+                    <div className="bg-gray-50 rounded-lg p-4 min-h-[44px] border border-gray-200">
+                      <div className="text-gray-700 whitespace-pre-wrap break-words">
+                        {fieldData.value || (
+                          <em className="text-gray-400">No value provided</em>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
               })}
-  
+
               {(!selectedSubmission.submission_data || selectedSubmission.submission_data.length === 0) && (
-                <div className="text-center py-8">
+                <div className="col-span-full text-center py-8">
                   <FaFileAlt className="mx-auto text-gray-400 text-4xl mb-4" />
                   <p className="text-gray-500 text-lg">No submission data available</p>
                 </div>
               )}
             </div>
           </div>
-  
-          {/* Modal Footer */}
-          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-            <div className="flex items-center justify-end">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-              >
-                Close
-              </button>
-             
-            </div>
-          </div>
         </div>
+      )}
+    </div>
+
+    {/* Modal Footer */}
+    <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+      <div className="flex items-center justify-end">
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="px-6 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+        >
+          Close
+        </button>
       </div>
+    </div>
+  </div>
+</div>
     );
   };
 
@@ -228,13 +317,13 @@ export default function ClientPortal() {
     <div className="min-h-screen bg-slate-50">
       {/* Welcome Header */}
       <Navbar />
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 text-white w-[80%] mx-24 mt-8">
+      <div className=" rounded-lg p-6 text-black w-[80%] mx-24 mt-8">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold">
               Welcome back, {state?.user?.username}
             </h2>
-            <p className="text-blue-100 mt-1">
+            <p className="text-neutral-600 mt-1">
               Complete your onboarding forms to access all our services
             </p>
           </div>
@@ -313,7 +402,7 @@ export default function ClientPortal() {
               onClick={() => setActiveTab("submissions")}
               className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
                 activeTab === "submissions"
-                  ? "bg-blue-600 text-white shadow-sm"
+                  ? "bg-green-600 text-white shadow-sm"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               }`}
             >
@@ -360,7 +449,7 @@ export default function ClientPortal() {
 
                     <button
                       onClick={() => setSelectedForm(form)}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200"
+                      className="cursor-pointer w-full bg-black text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200"
                     >
                       Fill Form
                     </button>

@@ -290,7 +290,7 @@ export default function FormBuilder() {
     api.post("forms/", formConfig)
       .then((res) => {
        
-        dispatch({ type: "SET_FORMS", payload: res.data });
+        dispatch({ type: "ADD_FORM", payload: res.data });
         setFormConfig(res.data);
         setPreviewMode(false);
         notify("Form saved successfully");
@@ -301,7 +301,8 @@ export default function FormBuilder() {
       });
   };
 
-  const handleSaveAsDraft = () => {
+  const handleSaveAsDraft = (e) => {
+    e.preventDefault();
     const draftFormConfig = {
       ...formConfig,
       is_active: false, 
@@ -327,7 +328,8 @@ export default function FormBuilder() {
     api.post("forms/", formConfig)
       .then((res) => {
     
-        dispatch({ type: "SET_FORMS", payload: res.data });
+        dispatch({ type: "ADD_FORM", payload: res.data });
+
         setFormConfig(res.data);
         setPreviewMode(false);
         notify("Form saved successfully");
@@ -466,6 +468,7 @@ export default function FormBuilder() {
             <FaEye size={14} /> Preview
           </button>
           <button
+          type="button"
             onClick={saveForm}
             className="px-3 py-1 bg-blue-500 text-white rounded flex items-center gap-1 cursor-pointer"
           >

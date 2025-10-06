@@ -6,6 +6,8 @@ const Overview = () => {
   // Safe access to notifications with fallback
   const notifications = state?.notifications || [];
 
+ 
+
   const getDate = (timestamp) => {
     const date = new Date(timestamp);
     return `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
@@ -79,8 +81,8 @@ const Overview = () => {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-600">Notification System</span>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-yellow-600">Degraded</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-green-600">Connected</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">

@@ -153,19 +153,18 @@ export default function FormSubmission({ form, onBack }) {
       };
   
       const res = await api.post("submissions/", payload);
+
+      const newSubmission = res.data;
   
      
       dispatch({
         type: "SET_SUBMISSIONS",
-        payload: {
-          formId: form.id,
-          data: formData,
-          files: uploadedFiles,
-          
-        },
+        payload: [...state.submissions, newSubmission]
       });
       notify();
+      setTimeout(() => {
       onBack();
+    }, 1500);
     } catch (err) {
       console.error("Error:", err.response?.data || err.message);
       notifyError("Failed to submit form. Please try again.");
@@ -327,7 +326,7 @@ export default function FormSubmission({ form, onBack }) {
     }
   };
 
-  const mySubmissions = state.submissions.filter((submission) => submission.created_by === state.user.id);
+
 
  
 
