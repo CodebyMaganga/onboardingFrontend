@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
+  baseURL: "https://onboarding-financial-platform-backe.vercel.app",
 });
 
 api.interceptors.request.use(

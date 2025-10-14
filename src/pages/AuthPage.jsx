@@ -105,80 +105,88 @@ export default function Login() {
         className="hidden md:flex w-1/2 bg-cover bg-center"
         style={{ backgroundImage: `url('/login-image.jpg')` }}
       />
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-white p-8">
-        <div className="w-full max-w-md">
-          <h1 className="text-2xl font-bold text-center mb-6">
-            {isLogin ? "Login" : "Register"} to FinOnboard
-          </h1>
+      <div className="flex w-full md:w-1/2 items-center justify-center bg-gradient-to-br from-green-100 via-white to-green-50 p-8">
+  <div className="w-full max-w-md border border-green-100 shadow-xl p-10 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-2xl">
+    <h1 className="text-3xl font-extrabold text-center mb-6 text-green-700 tracking-tight">
+      {isLogin ? "Welcome Back " : "Join FinOnboard "}
+    </h1>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded"
-              required
-            />
-            
-            {!isLogin && (
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded"
-                required
-              />
-            )}
-            
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded"
-              required
-            />
-            
-            {!isLogin && (
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded"
-                required
-              />
-            )}
-
-            <button
-              type="submit"
-              className="w-full p-3 bg-blue-600 text-white font-bold rounded mt-4 hover:bg-blue-700 cursor-pointer"
-            >
-              {isLogin ? "Login" : "Register"}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-gray-600 mt-4">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-            <button
-              type="button"
-              className="text-blue-600 hover:underline"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                // Clear form when switching modes
-                setFullName("");
-                setEmail("");
-                setPassword("");
-                setConfirmPassword("");
-              }}
-            >
-              {isLogin ? "Register" : "Login"}
-            </button>
-          </p>
-        </div>
+    <form className="space-y-5" onSubmit={handleSubmit}>
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Username"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition-all duration-200"
+          required
+        />
       </div>
+
+      {!isLogin && (
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition-all duration-200"
+            required
+          />
+        </div>
+      )}
+
+      <div className="relative">
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition-all duration-200"
+          required
+        />
+      </div>
+
+      {!isLogin && (
+        <div className="relative">
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none transition-all duration-200"
+            required
+          />
+        </div>
+      )}
+
+      <button
+        type="submit"
+        className="w-full p-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg mt-4 hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
+      >
+        {isLogin ? "Login" : "Register"}
+      </button>
+    </form>
+
+    <p className="text-center text-sm text-gray-700 mt-5">
+      {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+      <button
+        type="button"
+        className="text-green-600 font-semibold hover:underline hover:text-green-700 transition-all duration-200"
+        onClick={() => {
+          setIsLogin(!isLogin);
+          setFullName("");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+        }}
+      >
+        {isLogin ? "Register" : "Login"}
+      </button>
+    </p>
+  </div>
+</div>
+
     </div>
   );
 }
